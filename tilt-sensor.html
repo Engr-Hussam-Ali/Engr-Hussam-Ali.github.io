@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tilt Sensor PCB Assembly FEA & Optimization Study — Shah Syed Hussam Ali</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #161d2e;
+            --bg-card-hover: #1c2540;
+            --text-primary: #e8edf5;
+            --text-secondary: #8b95a9;
+            --text-muted: #5a6478;
+            --accent: #3b82f6;
+            --accent-dim: rgba(59,130,246,0.12);
+            --accent-glow: rgba(59,130,246,0.25);
+            --accent-warm: #f59e0b;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --border: rgba(255,255,255,0.06);
+            --border-accent: rgba(59,130,246,0.25);
+            --font-body: 'DM Sans', system-ui, sans-serif;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.02) 0px,
+                    rgba(255,255,255,0.02) 1px,
+                    transparent 1px,
+                    transparent 2px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: transparent;
+            transition: background var(--transition);
+            border-bottom: 1px solid transparent;
+            transition: background var(--transition), border-color var(--transition);
+        }
+
+        nav.scrolled {
+            background: rgba(10, 14, 23, 0.95);
+            border-bottom-color: var(--border);
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: 0.05em;
+            transition: color var(--transition);
+        }
+
+        .nav-logo:hover {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        .nav-dropdown-parent {
+            position: relative;
+        }
+
+        .nav-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(10, 14, 23, 0.98);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            min-width: 200px;
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: opacity var(--transition), visibility var(--transition), transform var(--transition);
+            margin-top: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-dropdown-parent:hover .nav-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav-dropdown a {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--transition), background var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .nav-dropdown a:hover,
+        .nav-dropdown a.active {
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* BACK LINK */
+        .back-link {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 2rem 0;
+            display: inline-block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+        }
+
+        .hero-eyebrow {
+            color: var(--accent);
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .hero-tagline {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
+        }
+
+        .hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .tag {
+            background: var(--accent-dim);
+            border: 1px solid var(--border-accent);
+            color: var(--accent);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* SECTION */
+        section {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s cubic-bezier(0.4,0,0.2,1), transform 0.6s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--text-primary);
+        }
+
+        .section-number {
+            color: var(--accent);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* PROBLEM STATEMENT */
+        .problem-paragraphs {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .problem-paragraphs p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .equation-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: var(--font-mono);
+            color: var(--accent);
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            overflow-x: auto;
+        }
+
+        /* ASSEMBLY */
+        .assembly-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .assembly-caption {
+            color: var(--text-muted);
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        table thead {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+        }
+
+        table th {
+            padding: 1rem;
+            text-align: left;
+            color: var(--accent);
+            font-weight: 600;
+            border-right: 1px solid var(--border);
+            font-family: var(--font-mono);
+            letter-spacing: 0.05em;
+        }
+
+        table th:last-child {
+            border-right: none;
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        table td:last-child {
+            border-right: none;
+        }
+
+        table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* METHODOLOGY */
+        .timeline {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            position: relative;
+            padding-left: 3rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--accent), transparent);
+            border-radius: var(--radius) 0 0 var(--radius);
+        }
+
+        .timeline-phase {
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* KEY RESULTS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* DIAGNOSTIC LOG */
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .before-box, .after-box {
+            background: var(--bg-card);
+            border: 2px solid;
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+
+        .before-box {
+            border-color: var(--accent-red);
+            border-left: 4px solid var(--accent-red);
+        }
+
+        .after-box {
+            border-color: var(--accent-green);
+            border-left: 4px solid var(--accent-green);
+        }
+
+        .before-after h4, .after-box h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .before-box h4 {
+            color: var(--accent-red);
+        }
+
+        .after-box h4 {
+            color: var(--accent-green);
+        }
+
+        .before-after ul {
+            list-style: none;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .before-after li {
+            margin-bottom: 0.75rem;
+        }
+
+        .before-after li::before {
+            content: '• ';
+            color: inherit;
+            margin-right: 0.5rem;
+        }
+
+        /* FIX ITEMS */
+        .fixes-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .fix-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+        }
+
+        .fix-badge {
+            display: inline-block;
+            background: var(--accent-dim);
+            border: 1px solid var(--border-accent);
+            color: var(--accent);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .fix-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .fix-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* INSIGHTS */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .insight-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .insight-number {
+            color: var(--accent);
+            font-family: var(--font-mono);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .insight-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+            flex: 1;
+        }
+
+        /* RESEARCH CONTEXT */
+        .context-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .context-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* FOOTER */
+        footer {
+            position: relative;
+            z-index: 2;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-name {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 4rem;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .section-heading {
+                font-size: 1.5rem;
+            }
+
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-tags {
+                gap: 0.5rem;
+            }
+
+            .tag {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-inner {
+                padding: 1rem 1rem;
+            }
+
+            .nav-links {
+                gap: 0.5rem;
+            }
+
+            .nav-links a {
+                font-size: 0.8rem;
+            }
+
+            .hero-title {
+                font-size: 1.35rem;
+            }
+
+            .hero-tagline {
+                font-size: 0.95rem;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.8rem;
+            }
+
+            table th, table td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- NAVIGATION -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">HUSSAM.ALI</a>
+            <ul class="nav-links">
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#skills">Skills</a></li>
+                <li class="nav-dropdown-parent">
+                    <a href="index.html#projects">Projects</a>
+                    <div class="nav-dropdown">
+                        <a href="index.html#projects">Projects Overview</a>
+                        <a href="tilt-sensor.html" class="active">Tilt Sensor FEA</a>
+                    </div>
+                </li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- BACK LINK -->
+    <a href="index.html#projects" class="back-link">← Back to Projects</a>
+
+    <!-- HERO -->
+    <section class="hero">
+        <span class="hero-eyebrow">FEA • Structural Simulation • Optimization</span>
+        <h1 class="hero-title">Tilt Sensor PCB Assembly FEA & Optimization Study</h1>
+        <p class="hero-tagline">Maximizing IoT tilt sensor signal reliability through multiphysics FEM analysis, systematic mesh convergence, and surrogate-model-driven optimal screw mounting position design.</p>
+        <div class="hero-tags">
+            <span class="tag">Abaqus/Standard</span>
+            <span class="tag">3DEXPERIENCE R2018x</span>
+            <span class="tag">Mesh Convergence</span>
+            <span class="tag">DOE</span>
+            <span class="tag">Surrogate Modeling</span>
+            <span class="tag">Thermo-Structural</span>
+        </div>
+    </section>
+
+    <!-- 01 — PROBLEM STATEMENT -->
+    <section id="problem">
+        <span class="section-number">01 — Problem Statement</span>
+        <h2 class="section-heading">Problem Definition</h2>
+
+        <div class="problem-paragraphs">
+            <p>Safety IoT tilt sensors deployed for structural health monitoring of aging buildings suffer from signal reliability degradation caused by environmental noise factors—principally temperature and humidity—that induce parasitic deformation in the sensor package surrounding the MEMS element.</p>
+
+            <p>The sensor output signal contains noise contributions from both the MEMS element and the surrounding package structure; minimizing the package contribution through enclosure structural optimization is the primary objective, as the package contribution dominates over the element contribution.</p>
+        </div>
+
+        <div class="equation-block">
+            y(x, n) = y<sub>t</sub>(x) + y<sub>s</sub>(n) + y<sub>e</sub>(n)
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-bottom: 2rem;">Where: y<sub>t</sub> = tilt signal of interest, y<sub>s</sub> = MEMS element noise, y<sub>e</sub> = package structural noise (optimization target)</p>
+
+        <p style="color: var(--text-secondary); line-height: 1.8;">Achieving this requires a numerically trustworthy FEM baseline—validated through rigorous mesh convergence, geometry-based constraint definitions, and tie-surface partitioning—before any DOE-driven parametric study or surrogate-model optimization can yield meaningful design recommendations.</p>
+    </section>
+
+    <!-- 02 — ASSEMBLY -->
+    <section id="assembly">
+        <span class="section-number">02 — Assembly</span>
+        <h2 class="section-heading">Multi-Component FE Assembly</h2>
+
+        <p class="assembly-description">The assembly comprises 7 distinct component types connected via 20 tie constraints—each requiring careful surface definition to maintain mesh-independent behavior during convergence studies.</p>
+
+        <p class="assembly-caption">fig.1 — 3D assembly isometric + XY plane view with screw hole positions (hole1, hole2, hole3)</p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Element</th>
+                        <th>Material</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Large PCB</td>
+                        <td>C3D8R (hex)</td>
+                        <td>FR-4</td>
+                    </tr>
+                    <tr>
+                        <td>Small PCB</td>
+                        <td>S4R (shell)</td>
+                        <td>FR-4</td>
+                    </tr>
+                    <tr>
+                        <td>MEMS Sensor</td>
+                        <td>S4R (shell)</td>
+                        <td>EMC</td>
+                    </tr>
+                    <tr>
+                        <td>ABS Housing ×2</td>
+                        <td>C3D10 (tet)</td>
+                        <td>ABS</td>
+                    </tr>
+                    <tr>
+                        <td>Screw Cylinders ×3</td>
+                        <td>C3D8R (hex)</td>
+                        <td>Steel</td>
+                    </tr>
+                    <tr>
+                        <td>MCU</td>
+                        <td>S4R (shell)</td>
+                        <td>EMC</td>
+                    </tr>
+                    <tr>
+                        <td>LoRa Module</td>
+                        <td>C3D8R (hex)</td>
+                        <td>Steel</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 03 — METHODOLOGY -->
+    <section id="methodology">
+        <span class="section-number">03 — Methodology</span>
+        <h2 class="section-heading">Five-Phase Analysis Strategy</h2>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-phase">Phase 01</span>
+                <div class="timeline-title">Multiphysics FE Model Construction</div>
+                <p class="timeline-description">Thermo-structural coupled analysis in Abaqus/Standard. Assembly of 7 component types with 20 tie constraints. Shell + solid hybrid element formulation with surface-to-surface contact discretization.</p>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-phase">Phase 02</span>
+                <div class="timeline-title">Systematic Mesh Convergence Study</div>
+                <p class="timeline-description">Sequential refinement of large PCB (2.0 → 0.125 mm) and small PCB (2.0 → 0.125 mm) mesh seeds, monitoring UR1/UR2/UR3 at MEMS center node (Node 41, MEMS3-1). Convergence threshold: &lt;1–2% change between successive sizes.</p>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-phase">Phase 03</span>
+                <div class="timeline-title">Root-Cause Diagnosis & 5 Iterative Fixes</div>
+                <p class="timeline-description">Diagnosed and resolved 5 systematic issues: (F1) node-based → element-based CYL surfaces, (F2) node-based → geometry-based MEMS sets, (F3) cylinder pad partitioning, (F4) ABS housing footprint partitioning with buffer zones, and (F5) large PCB 0.1° orientation correction—the final breakthrough that eliminated all tie reversions and singularities.</p>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-phase">Phase 04</span>
+                <div class="timeline-title">DOE Parametric Study (100 FEA Models)</div>
+                <p class="timeline-description">Latin Hypercube Sampling over screw mounting positions (hole1, hole2, hole3 XY coordinates). Each DOE point = full Abaqus solve extracting MEMS rotational deformation (UR1, UR2, UR3).</p>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-phase">Phase 05</span>
+                <div class="timeline-title">Surrogate Modeling & Optimization</div>
+                <p class="timeline-description">Gaussian Process surrogate from DOE dataset. Objective: maximize tilt sensitivity (yt) while minimizing environmental noise response (ye). Adaptive sampling to refine high-uncertainty regions. Cross-validation for model accuracy.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 04 — KEY RESULTS -->
+    <section id="results">
+        <span class="section-number">04 — Key Results</span>
+        <h2 class="section-heading">Convergence & Analysis Outcomes</h2>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">0.15%</div>
+                <div class="stat-label">UR1 Final Convergence</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">0.07%</div>
+                <div class="stat-label">UR2 Final Convergence</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100</div>
+                <div class="stat-label">DOE Models Planned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">20</div>
+                <div class="stat-label">Tie Constraints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Root-Cause Fixes</div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin: 3rem 0 1.5rem;">Final Mesh Convergence — Both PCBs Refined Simultaneously, Post-Orientation Fix</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>PCB Mesh Seed</th>
+                        <th>UR1 (×E-06)</th>
+                        <th>UR2 (×E-06)</th>
+                        <th>UR3 (×E-06)</th>
+                        <th>UR1 Δ</th>
+                        <th>UR2 Δ</th>
+                        <th>UR3 Δ</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>0.5 mm</td>
+                        <td>-144.00</td>
+                        <td>328.27</td>
+                        <td>72.83</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>—</td>
+                        <td>Baseline</td>
+                    </tr>
+                    <tr>
+                        <td>0.25 mm</td>
+                        <td>-151.95</td>
+                        <td>278.62</td>
+                        <td>3.44</td>
+                        <td>5.5%</td>
+                        <td>1.4%</td>
+                        <td>21.5%</td>
+                        <td>Refining</td>
+                    </tr>
+                    <tr>
+                        <td>0.125 mm</td>
+                        <td>-152.18</td>
+                        <td>278.80</td>
+                        <td>3.48</td>
+                        <td>0.15%</td>
+                        <td>0.07%</td>
+                        <td>1.2%</td>
+                        <td>Converged</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3 style="font-size: 1.2rem; font-weight: 600; color: var(--text-primary); margin: 3rem 0 1.5rem;">Edge-Only MEMS Tie Validation</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tie Configuration</th>
+                        <th>UR1 (×E-06)</th>
+                        <th>UR2 (×E-06)</th>
+                        <th>UR3 (×E-06)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Full surface tie</td>
+                        <td>-151.95</td>
+                        <td>278.62</td>
+                        <td>3.44</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>Edge-only (soldered)</td>
+                        <td>-152.42</td>
+                        <td>277.24</td>
+                        <td>3.38</td>
+                        <td>Δ &lt; 2%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem; font-style: italic;">Switching to physically representative edge-only soldered connection changed results by only 0.3–1.9%, confirming the model is not sensitive to this constraint detail.</p>
+    </section>
+
+    <!-- 05 — DIAGNOSTIC LOG -->
+    <section id="diagnostics">
+        <span class="section-number">05 — Diagnostic Log</span>
+        <h2 class="section-heading">Root-Cause Fix History</h2>
+
+        <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 2rem;">Each fix resolved a systematic source of non-convergence or non-physical results. Pre-fix results cannot be trusted as baselines. The orientation fix (F5) was the final breakthrough.</p>
+
+        <div class="before-after">
+            <div class="before-box">
+                <h4>BEFORE</h4>
+                <ul>
+                    <li>5 tie reversions per run</li>
+                    <li>9 numerical singularities</li>
+                    <li>2 negative eigenvalues</li>
+                    <li>176 "WILL NOT BE TIED" warnings</li>
+                    <li>Non-convergent at 0.125 mm (~3.4% oscillation)</li>
+                </ul>
+            </div>
+            <div class="after-box">
+                <h4>AFTER</h4>
+                <ul>
+                    <li>0 tie reversions</li>
+                    <li>0 numerical singularities</li>
+                    <li>0 negative eigenvalues</li>
+                    <li>143 "WILL NOT BE TIED" warnings (persistent housing)</li>
+                    <li>Textbook convergence — UR1: 0.15%, UR2: 0.07%</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="fixes-grid">
+            <div class="fix-item">
+                <span class="fix-badge">F1</span>
+                <div class="fix-title">Node-Based → Element-Based Master Surfaces</div>
+                <p class="fix-description">Replaced node-based CYL1/2/3 master surfaces with element-based surfaces using surface-to-surface discretization. Node IDs reassign silently after every remesh.</p>
+            </div>
+
+            <div class="fix-item">
+                <span class="fix-badge">F2</span>
+                <div class="fix-title">Node-Based → Geometry-Based MEMS Sets</div>
+                <p class="fix-description">Replaced node-based MEMS sets with geometry-based element surfaces. Eliminates constraint failures caused by node ID reassignment on remesh.</p>
+            </div>
+
+            <div class="fix-item">
+                <span class="fix-badge">F3</span>
+                <div class="fix-title">Cylinder Pad Partitioning</div>
+                <p class="fix-description">Geometrically partitioned the large PCB at cylinder footprints, creating dedicated pad surfaces. Ensures identical element faces participate in ties at every mesh size.</p>
+            </div>
+
+            <div class="fix-item">
+                <span class="fix-badge">F4</span>
+                <div class="fix-title">ABS Housing Footprint Partitioning</div>
+                <p class="fix-description">Geometric partitioning of the large PCB at all 3 ABS housing (pl, pl2, pl3) contact footprints with buffer zones. Ensures consistent element face participation in pcb_abs_1/2/3 ties across mesh sizes.</p>
+            </div>
+
+            <div class="fix-item">
+                <span class="fix-badge">F5</span>
+                <div class="fix-title">Large PCB Orientation Correction (0.1° Tilt)</div>
+                <p class="fix-description">Discovered the large PCB had a 0.1° tilt—normal was (-1.745E-03, 0, 999.998E-03) instead of (0, 0, 1). Components below had pure Z normals, creating a wedge-shaped gap at every tie interface. Rotated PCB and all components above it to correct orientation. Result: 0 tie reversions, 0 singularities, 0 negative eigenvalues. Tie failures dropped from 176 to 143. This was the final fix that enabled textbook convergence at 0.125 mm.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 06 — TOOLS & STACK -->
+    <section id="tools">
+        <span class="section-number">06 — Tools & Stack</span>
+        <h2 class="section-heading">Technical Ecosystem</h2>
+
+        <div class="hero-tags">
+            <span class="tag">Abaqus/Standard</span>
+            <span class="tag">3DEXPERIENCE R2018x</span>
+            <span class="tag">CATIA</span>
+            <span class="tag">SolidWorks</span>
+            <span class="tag">HyperMesh</span>
+            <span class="tag">MATLAB</span>
+            <span class="tag">Python</span>
+            <span class="tag">ANSYS</span>
+            <span class="tag">LS-DYNA</span>
+            <span class="tag">GitHub Pages</span>
+        </div>
+    </section>
+
+    <!-- 07 — ENGINEERING INSIGHTS -->
+    <section id="insights">
+        <span class="section-number">07 — Engineering Insights</span>
+        <h2 class="section-heading">Key Learnings & Principles</h2>
+
+        <div class="insights-grid">
+            <div class="insight-card">
+                <div class="insight-number">1</div>
+                <p class="insight-text"><strong>Node-Based Sets Are Fragile</strong> — Node IDs reassign silently after every remesh, causing constraint failures and non-physical results. All sets must be geometry-based or element-based. This single root cause invalidated early convergence baselines entirely.</p>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-number">2</div>
+                <p class="insight-text"><strong>Read the .dat, Not Just the .msg</strong> — The breakthrough that unlocked diagnosis came from reading the .dat file for preprocessing warnings—not the .msg file. 320+ hidden warnings were identified that the .msg completely omitted.</p>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-number">3</div>
+                <p class="insight-text"><strong>Sub-Degree Geometry Misalignment Kills Convergence</strong> — A 0.1° tilt in the large PCB—invisible to the eye—created a wedge-shaped gap at every tie interface, causing persistent tie reversions and non-convergent results.</p>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-number">4</div>
+                <p class="insight-text"><strong>Partitioning Is Essential for Tie Stability</strong> — Without geometric partitioning at contact footprints (3 screw pads + 3 ABS footprints on large PCB), different element faces participate in tie constraints at each mesh size.</p>
+            </div>
+
+            <div class="insight-card">
+                <div class="insight-number">5</div>
+                <p class="insight-text"><strong>Validate Constraint Sensitivity Last</strong> — After achieving convergence, constraint idealization changes affect results by only 0.3–1.9%. This test is only meaningful on a healthy model.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 08 — RESEARCH CONTEXT -->
+    <section id="context">
+        <span class="section-number">08 — Research Context</span>
+        <h2 class="section-heading">Project Context</h2>
+
+        <div class="context-box">
+            <p class="context-text">This work is conducted under a KRISS (Korea Research Institute of Standards and Science) funded research project at Sejong University, supervised by Professor GWJ. The broader research program targets maximizing the signal reliability of safety IoT tilt sensors for structural health monitoring of aging buildings—addressing a critical need as 41% of South Korea's building stock exceeds 30 years of age.</p>
+        </div>
+
+        <h3 style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1.5rem;">Signal Decomposition</h3>
+        <div class="equation-block">
+            y(x, n) = y<sub>t</sub>(x) + y<sub>s</sub>(n) + y<sub>e</sub>(n)
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center;">Where: y<sub>t</sub> = tilt signal of interest, y<sub>s</sub> = MEMS element noise, y<sub>e</sub> = package structural noise (optimization target)</p>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-name">Shah Syed Hussam Ali — Structural Simulation & Optimization Engineer</div>
+            <div class="footer-details">
+                Sejong University • KRISS Collaboration • 2024–2026
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navbar scroll effect
+        const navbar = document.getElementById('navbar');
+        let lastScrollTop = 0;
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            lastScrollTop = window.scrollY;
+        });
+
+        // Scroll animation for sections
+        const sections = document.querySelectorAll('section');
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

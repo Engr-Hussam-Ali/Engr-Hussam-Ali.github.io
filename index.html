@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shah Syed Hussam Ali — Structural Simulation & Optimization Engineer</title>
+<meta name="description" content="Portfolio of Shah Syed Hussam Ali — Structural Simulation & Optimization Engineer specializing in FEA, Abaqus, surrogate modeling, and design optimization.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #161d2e;
+    --bg-card-hover: #1c2540;
+    --text-primary: #e8edf5;
+    --text-secondary: #8b95a9;
+    --text-muted: #5a6478;
+    --accent: #3b82f6;
+    --accent-dim: rgba(59,130,246,0.12);
+    --accent-glow: rgba(59,130,246,0.25);
+    --accent-warm: #f59e0b;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --border: rgba(255,255,255,0.06);
+    --border-accent: rgba(59,130,246,0.25);
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,14,23,0.82);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    transition: var(--transition);
+  }
+  .nav-inner {
+    max-width: 1120px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    height: 64px;
+  }
+  .nav-logo {
+    font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500;
+    color: var(--accent); letter-spacing: 0.5px; text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-size: 0.88rem;
+    font-weight: 500; letter-spacing: 0.3px; transition: color var(--transition);
+    position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0;
+    width: 0; height: 2px; background: var(--accent);
+    transition: width var(--transition);
+  }
+  .nav-links a:hover { color: var(--text-primary); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* ─── NAV DROPDOWN ─── */
+  .nav-dropdown-parent { position: relative; }
+  .nav-dropdown {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    min-width: 220px; background: rgba(22,29,46,0.96);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 0.5rem 0; opacity: 0; visibility: hidden;
+    transform: translateX(-50%) translateY(8px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .nav-dropdown-parent:hover .nav-dropdown {
+    opacity: 1; visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+  .nav-dropdown a {
+    display: block; padding: 0.55rem 1.2rem; font-size: 0.82rem;
+    color: var(--text-secondary); text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .nav-dropdown a:hover { background: var(--accent-dim); color: var(--accent); }
+  .nav-dropdown a::after { display: none; }
+  .nav-dropdown a:first-child {
+    font-weight: 600; color: var(--text-primary);
+    border-bottom: 1px solid var(--border); margin-bottom: 0.25rem;
+    padding-bottom: 0.65rem;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 6rem 2rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -20%; right: -10%;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    filter: blur(80px); opacity: 0.4; pointer-events: none;
+  }
+  .hero-inner {
+    max-width: 1120px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent);
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1.5rem;
+    padding: 0.4rem 1rem; border: 1px solid var(--border-accent);
+    border-radius: 100px; background: var(--accent-dim);
+  }
+  .hero-tag .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green);
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+  .hero h1 {
+    font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.6rem);
+    font-weight: 700; line-height: 1.15; margin-bottom: 1.2rem;
+    color: var(--text-primary);
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero-subtitle {
+    font-size: 1.1rem; color: var(--text-secondary); max-width: 480px;
+    margin-bottom: 2rem; line-height: 1.8;
+  }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.75rem 1.75rem; border-radius: 100px; font-size: 0.9rem;
+    font-weight: 600; text-decoration: none; transition: all var(--transition);
+    cursor: pointer; border: none; font-family: var(--font-body);
+  }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 4px 24px rgba(59,130,246,0.3);
+  }
+  .btn-primary:hover {
+    background: #2563eb; transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(59,130,246,0.4);
+  }
+  .btn-outline {
+    background: transparent; color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* Hero right - stats card */
+  .hero-stats-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 2rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+  }
+  .stat-item {
+    text-align: center; padding: 1rem;
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    transition: all var(--transition);
+  }
+  .stat-item:hover {
+    border-color: var(--border-accent);
+    background: var(--accent-dim);
+  }
+  .stat-number {
+    font-family: var(--font-display); font-size: 2rem; font-weight: 700;
+    color: var(--accent); display: block; line-height: 1.2;
+  }
+  .stat-label {
+    font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;
+    text-transform: uppercase; letter-spacing: 0.8px;
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 5rem 2rem; }
+  .section-inner { max-width: 1120px; margin: 0 auto; }
+  .section-label {
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.75rem;
+  }
+  .section-title {
+    font-family: var(--font-display); font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 700; margin-bottom: 1rem;
+  }
+  .section-desc {
+    color: var(--text-secondary); max-width: 600px; margin-bottom: 3rem;
+    font-size: 1.02rem;
+  }
+
+  /* ─── SKILLS ─── */
+  #skills { background: var(--bg-secondary); }
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+  }
+  .skill-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem;
+    transition: all var(--transition); position: relative; overflow: hidden;
+  }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px; background: var(--accent); opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .skill-card:hover { border-color: var(--border-accent); transform: translateY(-4px); }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-icon {
+    width: 44px; height: 44px; border-radius: var(--radius-sm);
+    background: var(--accent-dim); display: flex; align-items: center;
+    justify-content: center; margin-bottom: 1rem; font-size: 1.2rem;
+  }
+  .skill-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+  .skill-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+  .skill-tags {
+    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem;
+  }
+  .skill-tag {
+    font-family: var(--font-mono); font-size: 0.7rem; padding: 0.25rem 0.6rem;
+    border-radius: 100px; background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.15); color: var(--accent);
+  }
+
+  /* ─── PROJECT SLIDESHOW ─── */
+  .slideshow-wrapper {
+    position: relative; overflow: hidden; margin-top: 2rem;
+  }
+  .slideshow-track {
+    display: flex; gap: 1.5rem;
+    animation: slideLeft 30s linear infinite;
+  }
+  .slideshow-track:hover { animation-play-state: paused; }
+  @keyframes slideLeft {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .slide-card {
+    flex: 0 0 420px; background: var(--bg-card);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 2rem; transition: all var(--transition);
+    cursor: pointer; text-decoration: none; display: block;
+    position: relative; overflow: hidden;
+  }
+  .slide-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 100%; height: 3px; background: var(--accent); opacity: 0;
+    transition: opacity var(--transition);
+  }
+  .slide-card:hover { border-color: var(--border-accent); transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .slide-card:hover::before { opacity: 1; }
+  .slide-number {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 0.6rem;
+  }
+  .slide-card h3 {
+    font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
+    margin-bottom: 0.5rem; color: var(--text-primary);
+  }
+  .slide-card .slide-desc {
+    font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7;
+    margin-bottom: 1rem;
+  }
+  .slide-tags {
+    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1.2rem;
+  }
+  .slide-tag {
+    font-family: var(--font-mono); font-size: 0.68rem; padding: 0.25rem 0.6rem;
+    border-radius: 100px; background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.15); color: var(--accent);
+  }
+  .slide-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;
+    padding-top: 1rem; border-top: 1px solid var(--border);
+  }
+  .slide-stat { text-align: center; }
+  .slide-stat .val {
+    font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
+    color: var(--accent); display: block;
+  }
+  .slide-stat .lbl {
+    font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .slide-cta {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent);
+    margin-top: 1rem; text-decoration: none;
+    transition: gap var(--transition);
+  }
+  .slide-card:hover .slide-cta { gap: 0.7rem; }
+  @media (max-width: 768px) {
+    .slide-card { flex: 0 0 320px; padding: 1.5rem; }
+  }
+
+  /* ─── LANGUAGES ─── */
+  .lang-grid { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem; }
+  .lang-item {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.92rem; color: var(--text-secondary);
+  }
+  .lang-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .lang-dot.native { background: var(--accent-green); }
+  .lang-dot.fluent { background: var(--accent); }
+  .lang-dot.learning { background: var(--accent-warm); }
+
+  /* ─── CONTACT ─── */
+  #contact { background: var(--bg-secondary); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 2rem;
+  }
+  .contact-info p {
+    color: var(--text-secondary); font-size: 1rem; line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 0.75rem;
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 0.92rem; transition: color var(--transition);
+  }
+  .contact-link:hover { color: var(--accent); }
+  .contact-link-icon {
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    background: var(--accent-dim); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 2rem; text-align: center; border-top: 1px solid var(--border);
+    color: var(--text-muted); font-size: 0.8rem;
+  }
+
+  /* placeholder banner */
+  .placeholder-banner {
+    background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04));
+    border: 1px dashed rgba(245,158,11,0.35); border-radius: var(--radius-sm);
+    padding: 1rem 1.5rem; margin-bottom: 1.5rem;
+    font-size: 0.82rem; color: var(--accent-warm);
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .placeholder-banner strong { color: #fbbf24; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 768px) {
+    .hero-inner { grid-template-columns: 1fr; gap: 2rem; }
+    .project-overview { grid-template-columns: 1fr; }
+    .results-grid { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .nav-links { gap: 1rem; }
+    .nav-links a { font-size: 0.8rem; }
+    .project-header, .project-body { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .convergence-section { padding: 1.2rem; overflow-x: auto; }
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-in {
+    opacity: 0; animation: fadeUp 0.7s ease forwards;
+  }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  .delay-5 { animation-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- ════════ NAV ════════ -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">HUSSAM.ALI</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li class="nav-dropdown-parent">
+        <a href="#projects">Projects</a>
+        <div class="nav-dropdown">
+          <a href="#projects">Projects Overview</a>
+          <a href="tilt-sensor.html">Tilt Sensor FEA</a>
+        </div>
+      </li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero" id="about">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag animate-in">
+        <span class="dot"></span> Open to Opportunities in Germany
+      </div>
+      <h1 class="animate-in delay-1">Shah Syed<br><span>Hussam Ali</span></h1>
+      <p class="hero-subtitle animate-in delay-2">
+        Structural Simulation &amp; Optimization Engineer specializing in FEA, surrogate-based design optimization, and mesh convergence methodology for high-precision sensor assemblies.
+      </p>
+      <div class="hero-cta animate-in delay-3">
+        <a href="#projects" class="btn btn-primary">View Projects ↓</a>
+        <a href="#contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+    </div>
+    <div class="hero-stats-card animate-in delay-4">
+      <div class="stat-item">
+        <span class="stat-number">100</span>
+        <span class="stat-label">DOE Models</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">10+</span>
+        <span class="stat-label">CAE Tools</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">0.15%</span>
+        <span class="stat-label">Convergence</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">3</span>
+        <span class="stat-label">Languages</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SKILLS ════════ -->
+<section id="skills">
+  <div class="section-inner">
+    <p class="section-label animate-in">Competencies</p>
+    <h2 class="section-title animate-in delay-1">Technical Toolkit</h2>
+    <p class="section-desc animate-in delay-2">
+      End-to-end simulation capability — from CAD geometry through meshing, solving, post-processing, and design optimization.
+    </p>
+    <div class="skills-grid">
+      <div class="skill-card animate-in delay-1">
+        <div class="skill-icon">⚙️</div>
+        <h3>FEA / Structural Analysis</h3>
+        <p>Static, thermal-structural, and linear analysis of multi-component assemblies with tie constraints, shell–solid coupling, and contact.</p>
+        <div class="skill-tags">
+          <span class="skill-tag">ABAQUS</span>
+          <span class="skill-tag">ANSYS</span>
+          <span class="skill-tag">LS-DYNA</span>
+        </div>
+      </div>
+      <div class="skill-card animate-in delay-2">
+        <div class="skill-icon">🔬</div>
+        <h3>Optimization & DOE</h3>
+        <p>Surrogate-based optimization using Latin Hypercube sampling, response surface methodology, and parametric design studies.</p>
+        <div class="skill-tags">
+          <span class="skill-tag">MATLAB</span>
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">Surrogate Models</span>
+        </div>
+      </div>
+      <div class="skill-card animate-in delay-3">
+        <div class="skill-icon">🧊</div>
+        <h3>Pre-Processing & Meshing</h3>
+        <p>Hex-dominant meshing, geometric partitioning for constraint stability, mesh convergence methodology, and element quality assessment.</p>
+        <div class="skill-tags">
+          <span class="skill-tag">HyperMesh</span>
+          <span class="skill-tag">ABAQUS CAE</span>
+        </div>
+      </div>
+      <div class="skill-card animate-in delay-4">
+        <div class="skill-icon">📐</div>
+        <h3>CAD & Design</h3>
+        <p>3D parametric modeling, assembly design, and design-for-simulation geometry preparation and defeaturing.</p>
+        <div class="skill-tags">
+          <span class="skill-tag">CATIA</span>
+          <span class="skill-tag">SolidWorks</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 2.5rem;">
+      <h4 style="font-size: 0.78rem; font-family: var(--font-mono); color: var(--accent); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 0.8rem;">Languages</h4>
+      <div class="lang-grid">
+        <div class="lang-item"><span class="lang-dot native"></span> English — Fluent</div>
+        <div class="lang-item"><span class="lang-dot native"></span> Urdu — Native</div>
+        <div class="lang-item"><span class="lang-dot learning"></span> German — Learning</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ PROJECTS ════════ -->
+<section id="projects">
+  <div class="section-inner">
+    <p class="section-label">Case Studies</p>
+    <h2 class="section-title">Engineering Projects</h2>
+    <p class="section-desc">
+      Detailed project case studies demonstrating simulation methodology, problem-solving, and engineering rigor.
+    </p>
+
+    <!-- ──── SLIDESHOW ──── -->
+    <div class="slideshow-wrapper">
+      <div class="slideshow-track" id="slideTrack">
+
+        <!-- SLIDE 1: Tilt Sensor -->
+        <a href="tilt-sensor.html" class="slide-card">
+          <p class="slide-number">Project 01</p>
+          <h3>Tilt Sensor PCB Assembly FEA &amp; Optimization Study</h3>
+          <p class="slide-desc">Maximizing IoT tilt sensor signal reliability through multiphysics FEM analysis, systematic mesh convergence, and surrogate-model-driven screw mounting optimization.</p>
+          <div class="slide-tags">
+            <span class="slide-tag">Abaqus/Standard</span>
+            <span class="slide-tag">DOE</span>
+            <span class="slide-tag">Surrogate Modeling</span>
+            <span class="slide-tag">Mesh Convergence</span>
+          </div>
+          <div class="slide-stats">
+            <div class="slide-stat">
+              <span class="val">0.15%</span>
+              <span class="lbl">UR1 Conv.</span>
+            </div>
+            <div class="slide-stat">
+              <span class="val">100</span>
+              <span class="lbl">DOE Models</span>
+            </div>
+            <div class="slide-stat">
+              <span class="val">5</span>
+              <span class="lbl">Fixes Applied</span>
+            </div>
+          </div>
+          <span class="slide-cta">View full case study <span>&#8594;</span></span>
+        </a>
+
+        <!-- SLIDE 2: Coming Soon -->
+        <div class="slide-card" style="opacity: 0.5; cursor: default;">
+          <p class="slide-number">Project 02</p>
+          <h3>Coming Soon</h3>
+          <p class="slide-desc">Additional case study in structural simulation and optimization — currently in progress.</p>
+          <div class="slide-tags">
+            <span class="slide-tag" style="opacity: 0.5;">TBD</span>
+          </div>
+          <div class="slide-stats">
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+          </div>
+        </div>
+
+        <!-- SLIDE 3: Coming Soon -->
+        <div class="slide-card" style="opacity: 0.5; cursor: default;">
+          <p class="slide-number">Project 03</p>
+          <h3>Coming Soon</h3>
+          <p class="slide-desc">Further projects demonstrating FEA, optimization, and design methodology will be published here.</p>
+          <div class="slide-tags">
+            <span class="slide-tag" style="opacity: 0.5;">TBD</span>
+          </div>
+          <div class="slide-stats">
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+          </div>
+        </div>
+
+        <!-- DUPLICATES for infinite loop -->
+        <a href="tilt-sensor.html" class="slide-card">
+          <p class="slide-number">Project 01</p>
+          <h3>Tilt Sensor PCB Assembly FEA &amp; Optimization Study</h3>
+          <p class="slide-desc">Maximizing IoT tilt sensor signal reliability through multiphysics FEM analysis, systematic mesh convergence, and surrogate-model-driven screw mounting optimization.</p>
+          <div class="slide-tags">
+            <span class="slide-tag">Abaqus/Standard</span>
+            <span class="slide-tag">DOE</span>
+            <span class="slide-tag">Surrogate Modeling</span>
+            <span class="slide-tag">Mesh Convergence</span>
+          </div>
+          <div class="slide-stats">
+            <div class="slide-stat">
+              <span class="val">0.15%</span>
+              <span class="lbl">UR1 Conv.</span>
+            </div>
+            <div class="slide-stat">
+              <span class="val">100</span>
+              <span class="lbl">DOE Models</span>
+            </div>
+            <div class="slide-stat">
+              <span class="val">5</span>
+              <span class="lbl">Fixes Applied</span>
+            </div>
+          </div>
+          <span class="slide-cta">View full case study <span>&#8594;</span></span>
+        </a>
+
+        <div class="slide-card" style="opacity: 0.5; cursor: default;">
+          <p class="slide-number">Project 02</p>
+          <h3>Coming Soon</h3>
+          <p class="slide-desc">Additional case study in structural simulation and optimization — currently in progress.</p>
+          <div class="slide-tags">
+            <span class="slide-tag" style="opacity: 0.5;">TBD</span>
+          </div>
+          <div class="slide-stats">
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+          </div>
+        </div>
+
+        <div class="slide-card" style="opacity: 0.5; cursor: default;">
+          <p class="slide-number">Project 03</p>
+          <h3>Coming Soon</h3>
+          <p class="slide-desc">Further projects demonstrating FEA, optimization, and design methodology will be published here.</p>
+          <div class="slide-tags">
+            <span class="slide-tag" style="opacity: 0.5;">TBD</span>
+          </div>
+          <div class="slide-stats">
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+            <div class="slide-stat"><span class="val" style="color: var(--text-muted);">—</span><span class="lbl">Metric</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════ EDUCATION ════════ -->
+<section id="education" style="background: var(--bg-secondary);">
+  <div class="section-inner">
+    <p class="section-label">Background</p>
+    <h2 class="section-title">Education</h2>
+    <div class="placeholder-banner">
+      ⚠️ <span><strong>To be added</strong> — Degree, university, and graduation year will be filled in here.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CONTACT ════════ -->
+<section id="contact">
+  <div class="section-inner">
+    <p class="section-label">Let's Connect</p>
+    <h2 class="section-title">Get in Touch</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <p>I am actively seeking opportunities in Germany as a Structural Simulation &amp; Optimization Engineer. If you are looking for someone with hands-on FEA expertise, surrogate-based optimization skills, and a methodical approach to engineering problems, I'd welcome the conversation.</p>
+        <div class="contact-links">
+          <a href="mailto:syedhussam686@gmail.com" class="contact-link">
+            <div class="contact-link-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
+            </div>
+            <span>syedhussam686@gmail.com</span>
+          </a>
+          <a href="https://linkedin.com/in/your-profile" class="contact-link" target="_blank">
+            <div class="contact-link-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <span>LinkedIn Profile</span>
+          </a>
+          <a href="https://github.com/your-username" class="contact-link" target="_blank">
+            <div class="contact-link-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#3b82f6"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+            </div>
+            <span>GitHub</span>
+          </a>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <div style="padding: 2.5rem; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); text-align: center; max-width: 320px;">
+          <p style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Available for</p>
+          <p style="color: var(--accent); font-family: var(--font-mono); font-size: 0.88rem; margin-bottom: 1rem;">Full-time positions in Germany</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem;">Structural Simulation · FEA · Optimization · CAE</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <p>&copy; 2026 Shah Syed Hussam Ali. Built with precision.</p>
+</footer>
+
+<script>
+// Intersection Observer for scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('animate-in');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.skill-card, .slide-card, .stat-item').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+
+// Override the animation for observed elements
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `.animate-in.skill-card, .animate-in.slide-card, .animate-in.stat-item { opacity: 1 !important; transform: translateY(0) !important; }`;
+document.head.appendChild(styleSheet);
+
+// Smooth nav background on scroll
+window.addEventListener('scroll', () => {
+  const nav = document.querySelector('nav');
+  if (window.scrollY > 50) {
+    nav.style.background = 'rgba(10,14,23,0.95)';
+  } else {
+    nav.style.background = 'rgba(10,14,23,0.82)';
+  }
+});
+</script>
+</body>
+</html>
