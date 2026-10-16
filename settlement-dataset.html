@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A verified settlement dataset for placing sensors in buildings – Shah Syed Hussam Ali</title>
+<meta name="description" content="Case study: an automated Abaqus pipeline that generates 108 reinforced-concrete buildings, runs 10,692 settlement analyses, verifies every building with eight gates and writes a 432-file training dataset, shipped as the GNN Studio 1.0 Windows program.">
+<link rel="canonical" href="https://engr-hussam-ali.github.io/settlement-dataset.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A verified settlement dataset for placing sensors in buildings">
+<meta property="og:description" content="Automated Abaqus pipeline: 108 buildings, 10,692 analyses, eight verification gates, GNN Studio 1.0. Case study by Shah Syed Hussam Ali.">
+<meta property="og:url" content="https://engr-hussam-ali.github.io/settlement-dataset.html">
+<meta property="og:image" content="https://engr-hussam-ali.github.io/assets/img/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F2F4F3">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/archivo-latin-standard-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="wordmark" href="index.html">Hussam Ali</a>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+    <nav class="nav" id="site-nav" aria-label="Main">
+      <a href="index.html#work">Case studies</a>
+      <a href="tilt-sensor.html">Sensor package</a>
+      <a href="settlement-dataset.html" aria-current="page">Settlement dataset</a>
+      <a href="index.html#experience">Experience</a>
+      <a href="index.html#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<header class="study-head">
+  <div class="wrap">
+    <a class="crumb" href="index.html#work">All case studies</a>
+    <h1>A verified settlement dataset for placing sensors in buildings</h1>
+    <p class="standfirst">An automated Abaqus pipeline that builds 108 concrete-frame buildings, runs 10,692 settlement analyses and checks every result, packaged as a Windows program. Safety IoT project of KRISS, South Korea's national measurement standards laboratory, at Sejong University.</p>
+    <dl class="study-meta">
+      <div><dt>My role</dt><dd>Pipeline design, model generation, verification gates, dataset and the GNN Studio program</dd></div>
+      <div><dt>Tools</dt><dd>Abaqus/Standard 2018, Python 3, Abaqus Python for result extraction</dd></div>
+      <div><dt>Scale</dt><dd>108 buildings, 1,728 footings, 669,971 nodes, 10,692 analyses</dd></div>
+    </dl>
+  </div>
+</header>
+
+<div class="wrap study">
+  <nav class="toc" aria-label="On this page">
+    <p>On this page</p>
+    <ol>
+      <li><a href="#why">Why a dataset</a></li>
+      <li><a href="#pipeline">The pipeline</a></li>
+      <li><a href="#model">Building model</a></li>
+      <li><a href="#catalogue">108 buildings</a></li>
+      <li><a href="#scenarios">Settlement scenarios</a></li>
+      <li><a href="#verification">Verification</a></li>
+      <li><a href="#dataset">The dataset</a></li>
+      <li><a href="#software">GNN Studio 1.0</a></li>
+      <li><a href="#limits">Limits and next steps</a></li>
+    </ol>
+  </nav>
+
+  <article>
+    <div class="key-points">
+      <h3>In short</h3>
+      <ul>
+        <li>10,692 analyses over 108 buildings solved without a failure.</li>
+        <li>Every building passed eight physical and numerical gates and a superposition check (residual ≤ 6.6×10<sup>−7</sup>).</li>
+        <li>Mesh refinement changes the candidate tilts by at most 0.789&nbsp;% and leaves their ranking unchanged (Spearman ρ ≥ 0.99975).</li>
+        <li>The result is a 432-file training dataset and an installable program that runs the whole pipeline from a GUI.</li>
+      </ul>
+    </div>
+
+    <section id="why" aria-labelledby="why-h">
+      <h2 id="why-h">Why a dataset</h2>
+      <p>When the ground under a building settles unevenly, columns and joints rotate. A tilt sensor reports the settlement only if it sits where that rotation is large, and where that is depends on the building and on the settlement pattern. The project's plan is to let a graph neural network choose the location. That needs a large, verified set of simulations first, and building that set was my job.</p>
+      <figure class="fig">
+        <button type="button" aria-label="Enlarge figure"><img src="assets/img/fig-2-14.webp" width="1800" height="583" loading="lazy" alt="Left: schematic of a frame rotating over soft soil. Right: finite-element model of a three-storey building with columns, beams, slabs and footing pads."></button>
+        <figcaption><b>The idea and the model.</b> (a) Uneven settlement over soft soil rotates the frame; the best sensor position is not known in advance. (b) Model of building B34: 5×5 columns, three storeys with setbacks, footing pads on springs; dots mark candidate sensor nodes.</figcaption>
+      </figure>
+    </section>
+
+    <section id="pipeline" aria-labelledby="pipeline-h">
+      <h2 id="pipeline-h">The pipeline</h2>
+      <p>Eight steps, each writing its own log, run end to end without manual editing of models:</p>
+      <ol class="steps">
+        <li><b>Building parameters</b>Plan grid, storeys, spans, storey heights, setbacks.</li>
+        <li><b>Building catalogue</b>108 buildings, with member sizes from design rules.</li>
+        <li><b>Model generation</b>Abaqus input decks written by script.</li>
+        <li><b>Gravity analysis and gates</b>Each building must pass eight checks.</li>
+        <li><b>Settlement scenarios</b>Two complementary methods, A and B.</li>
+        <li><b>Solving</b>Batch runs on the licence pool.</li>
+        <li><b>Result extraction</b>Displacements and rotations at every node.</li>
+        <li><b>Dataset</b>432 files, four per building.</li>
+      </ol>
+    </section>
+
+    <section id="model" aria-labelledby="model-h">
+      <h2 id="model-h">Building model</h2>
+      <ul>
+        <li>Low-rise (one to three storeys) reinforced-concrete frames: beam elements for columns and beams, shells for slabs and footing pads. Every column node is a candidate sensor location.</li>
+        <li>Footings rest on Winkler springs (k<sub>s</sub> = 4.0×10<sup>7</sup>&nbsp;N/m³ with Terzaghi's size correction) with no vertical support, so the soil carries all vertical load.</li>
+        <li>Concrete f<sub>ck</sub> 24&nbsp;MPa, E<sub>c</sub> 25.8&nbsp;GPa, ν 0.20, with cracked-section stiffness factors of 0.70 for columns, 0.35 for beams and 0.25 for slabs, following the Korean design standards (KDS).</li>
+        <li>Service loads (1.0 dead + 1.0 live), linear static: self-weight, superimposed dead load, live load and backfill on the pads, taken from the KDS load tables.</li>
+      </ul>
+    </section>
+
+    <section id="catalogue" aria-labelledby="catalogue-h">
+      <h2 id="catalogue-h">108 buildings</h2>
+      <p>Nine plan grids from 3×3 to 5×5 columns, one to three storeys, spans of 4.5 to 7.5&nbsp;m and storey heights of 3.0 to 4.0&nbsp;m; 52 buildings have setbacks. Members are sized with design rules of thumb; the models make no claim of code compliance. In total: 1,728 footings, 669,971 nodes and 29,347 candidate sensor nodes.</p>
+      <figure class="fig">
+        <button type="button" aria-label="Enlarge figure"><img src="assets/img/fig-2-15.webp" width="1800" height="609" loading="lazy" alt="Rows of small elevation silhouettes of all 108 buildings, one row per plan grid, with building B34 in orange."></button>
+        <figcaption><b>The catalogue.</b> Elevation outlines of the 108 buildings, one row per plan grid; orange: building B34.</figcaption>
+      </figure>
+    </section>
+
+    <section id="scenarios" aria-labelledby="scenarios-h">
+      <h2 id="scenarios-h">Two ways to represent settlement</h2>
+      <ul>
+        <li><strong>Method A, local soil softening:</strong> the springs under selected footings are scaled down by a factor α from 0.9 to 0.05. Five families of footing sets give 10,368 scenarios.</li>
+        <li><strong>Method B, imposed ground movement:</strong> three unit cases per footing (uniform, linear in x, linear in y), 5,184 load cases solved in one step per building. Any settlement field up to 20&nbsp;mm is a linear combination of them.</li>
+      </ul>
+      <figure class="fig">
+        <button type="button" aria-label="Enlarge figure"><img src="assets/img/fig-2-16.webp" width="1800" height="220" loading="lazy" alt="Footing-set patterns of method A as small grids with softened footings in orange, and the three unit settlement shapes of method B."></button>
+        <figcaption><b>Settlement representations.</b> (a) Footing-set families of method A (orange: softened footings); (b) the three unit cases of method B for one footing.</figcaption>
+      </figure>
+    </section>
+
+    <section id="verification" aria-labelledby="verification-h">
+      <h2 id="verification-h">Verification</h2>
+      <p>A dataset of 10,692 analyses is only useful if each one is right. Three layers of checking:</p>
+      <ul>
+        <li><strong>Eight gates per building:</strong> total mass, centre of mass, soil reaction, restraint reaction, tension, solver messages, bearing pressure and symmetry. All 108 buildings passed; the symmetry gate applies to the 99 symmetric ones.</li>
+        <li><strong>Superposition:</strong> method B combinations match independent analyses in all 108 buildings, with a residual of at most 6.6×10<sup>−7</sup> against a tolerance of 1×10<sup>−6</sup>.</li>
+        <li><strong>Mesh convergence:</strong> three buildings re-solved at two and four times the element divisions. Candidate tilts change by at most 0.789&nbsp;% (limit 2&nbsp;%) and their ranking holds (Spearman ρ ≥ 0.99975).</li>
+      </ul>
+      <figure class="fig">
+        <button type="button" aria-label="Enlarge figure"><img src="assets/img/fig-2-17.webp" width="1772" height="580" loading="lazy" alt="Three contour plots of vertical settlement for building B05: the sum of 27 unit cases, the direct analysis, and their difference, which shows no visible error."></button>
+        <figcaption><b>Superposition check, building B05.</b> (a) Sum of 27 unit cases; (b) direct analysis; (c) difference on the same colour scale.</figcaption>
+      </figure>
+    </section>
+
+    <section id="dataset" aria-labelledby="dataset-h">
+      <h2 id="dataset-h">The dataset</h2>
+      <p>432 files, four per building: node features including footing stiffness, scenario information, method A labels and method B labels, with the displacement and rotation at every candidate node. The tilt label is the scenario minus the reference state (method A) or the perturbation response (method B).</p>
+      <figure class="fig">
+        <button type="button" aria-label="Enlarge figure"><img src="assets/img/fig-2-18.webp" width="1800" height="752" loading="lazy" alt="Three plan views of building B34 with each column coloured by its largest tilt change; the ringed column with the largest change is in a different place for each settlement pattern."></button>
+        <figcaption><b>Why the location has to be learned.</b> Building B34, method A, α = 0.05: largest tilt change along each column for a softened corner footing, interior footing and line of footings. The ringed column with the largest change (1.43, 3.05 and 4.85&nbsp;mrad) moves with the pattern.</figcaption>
+      </figure>
+    </section>
+
+    <section id="software" aria-labelledby="software-h">
+      <h2 id="software-h">GNN Studio 1.0</h2>
+      <p>To make the pipeline usable by the next researcher, I packaged it as an installable Windows program. Every pipeline step, the mesh study and adding new buildings are available from the GUI. Pre-run checks catch problems before a job is submitted, and safeguards prevent the baseline results from being overwritten. The program drives an existing Abaqus installation rather than bundling it.</p>
+    </section>
+
+    <section id="limits" aria-labelledby="limits-h">
+      <h2 id="limits-h">Limits and next steps</h2>
+      <p>The dataset uses one soil stiffness and linear-elastic service analysis, and the mesh study does not cover the largest buildings. The detection threshold and the utility function for choosing a location are still to be set; training the graph neural network, optimising the location and defining field criteria are the next stage of the project.</p>
+    </section>
+
+    <nav class="next-study" aria-label="More case studies">
+      <a href="tilt-sensor.html">Previous: why a tilt sensor reads a tilt that isn't there</a>
+      <a href="index.html#contact">Get in touch</a>
+    </nav>
+  </article>
+</div>
+
+</main>
+
+<dialog class="viewer" aria-label="Figure viewer">
+  <button type="button">Close</button>
+  <img src="" alt="">
+  <p></p>
+</dialog>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 2026 Shah Syed Hussam Ali</p>
+    <p>Figures from the KRISS Safety IoT project, Sejong University</p>
+  </div>
+</footer>
+
+<script src="assets/js/site.js" defer></script>
+</body>
+</html>
